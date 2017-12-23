@@ -24,20 +24,18 @@ catkin_python_setup()
 ## Generate messages in the 'msg' folder
 add_message_files(
   FILES
-  Chain.msg
-  ChainStamped.msg
+#  Chain.msg
   Frame.msg
   FrameStamped.msg
-  Jacobian.msg
-  JacobianStamped.msg
+#  Jacobian.msg
   JntArray.msg
   JntArrayStamped.msg
-  Joint.msg
-  JointStamped.msg
+#  Joint.msg
+#  RigidBodyInertia.msg
   Rotation.msg
   RotationStamped.msg
-  Segment.msg
-  SegmentStamped.msg
+#  RotationalInertia.msg
+#  Segment.msg
   Twist.msg
   TwistStamped.msg
   Vector.msg
@@ -63,7 +61,7 @@ generate_messages(
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
   INCLUDE_DIRS include
-  CATKIN_DEPENDS message_runtime
+  CATKIN_DEPENDS std_msgs message_runtime
   DEPENDS orocos_kdl
 )
 
@@ -98,7 +96,22 @@ endif()
 # See http://ros.org/doc/api/catkin/html/adv_user_guide/variables.html
 
 ## Mark cpp header files for installation
-install(DIRECTORY include/${PROJECT_NAME}/
+install(FILES
+#  include/${PROJECT_NAME}/Chain.h
+  include/${PROJECT_NAME}/Frame.h
+#  include/${PROJECT_NAME}/Jacobian.h
+  include/${PROJECT_NAME}/JntArray.h
+#  include/${PROJECT_NAME}/Joint.h
+#  include/${PROJECT_NAME}/RigidBodyInertia.h
+  include/${PROJECT_NAME}/Rotation.h
+#  include/${PROJECT_NAME}/RotationalInertia.h
+#  include/${PROJECT_NAME}/Segment.h
+  include/${PROJECT_NAME}/Twist.h
+  include/${PROJECT_NAME}/Vector.h
+  include/${PROJECT_NAME}/Wrench.h
+  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+)
+install(DIRECTORY include/${PROJECT_NAME}/util include/${PROJECT_NAME}/boost
   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
   FILES_MATCHING PATTERN "*.h"
 )
@@ -112,14 +125,20 @@ install(DIRECTORY include/${PROJECT_NAME}/
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
+  ${orocos_kdl_INCLUDE_DIRS}
 )
 
 ## Add gtest based cpp test target and link libraries
-catkin_add_gtest(${PROJECT_NAME}-test test/test_kdl_msgs.cpp)
-if(TARGET ${PROJECT_NAME}-test)
+if(CATKIN_ENABLE_TESTING)
+  find_package(roscpp_serialization REQUIRED)
+  find_package(roscpp_traits REQUIRED)
+
+  catkin_add_gtest(${PROJECT_NAME}-test test/test_kdl_msgs.cpp)
   target_link_libraries(${PROJECT_NAME}-test
     ${catkin_LIBRARIES}
     ${orocos_kdl_LIBRARIES}
+    ${roscpp_serialization_LIBRARIES}
+    ${roscpp_traits_LIBRARIES}
   )
 endif()
 
